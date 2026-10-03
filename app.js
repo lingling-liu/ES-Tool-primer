@@ -59,6 +59,7 @@ function showPage(id, push = true) {
   if (push) history.pushState({ id }, "", id === "home" ? "#contents" : `#${id}`);
   window.scrollTo({ top: 0, behavior: "smooth" });
   sidebar.classList.remove("open");
+  document.dispatchEvent(new Event('primer:pagechange'));
 }
 
 buttons.forEach(button => button.addEventListener("click", () => showPage(button.dataset.page)));
@@ -87,3 +88,4 @@ document.addEventListener("primer:languagechange", () => {
   document.title = `${translate(page.dataset.short)} | ${translate("Natural Capital Tool Primer")}`;
   searchTools();
 });
+

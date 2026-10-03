@@ -8,3 +8,13 @@
 @media(max-width:420px){.translate-control{margin-right:7px}.translate-control select{max-width:90px;padding:6px;font-size:11px}}
 @media(max-width:380px){.translate-control select{max-width:60px;padding:6px 2px}}
 @media print{.translate-control{display:none}}
+.translation-retry{font:inherit;color:var(--green-deep);background:var(--white);border:1px solid var(--line);border-radius:4px;padding:3px 7px;cursor:pointer}
+.translation-status{white-space:normal;max-width:260px}
+.translation-retry:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.google-translate-host,.goog-te-banner-frame,.skiptranslate>iframe{display:none!important}
+body{top:0!important}
+.translation-phrases{position:absolute;left:0;top:0;width:1px;height:1px;overflow:hidden;clip-path:inset(100%);pointer-events:none}
+#goog-gt-tt,.goog-tooltip,.goog-tooltip:hover{display:none!important}
+.goog-text-highlight{background:inherit!important;box-shadow:none!important}
+
+primer-text,primer-term{display:inline}

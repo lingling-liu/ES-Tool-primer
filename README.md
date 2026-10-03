@@ -1,6 +1,6 @@
 # Natural Capital & Ecosystem Services Tool Primer
 
-This is the complete static source of the published 11-tool primer, exported from version 5. It needs no build step, package installation, database, API key, or ChatGPT account. Upload the contents of this folder directly to the root of your GitHub repository: `index.html` must sit beside this README, not inside another project folder.
+This is the complete static source of the published 11-tool primer, exported from **published version 7** on 2026-10-03 (source commit `73ca48ff22adfcbf6a8414c170b18284c8da8d28`). It needs no build step, package installation, database, API key, or ChatGPT account. Upload the contents of this folder directly to the root of your GitHub repository: `index.html` must sit beside this README, not inside another project folder.
 
 ## Project structure
 
@@ -9,7 +9,7 @@ index.html         All English content, tool profiles, links, navigation and car
 styles.css         Original layout, colors, typography and responsive rules
 app.js             Navigation, page counters and full-text search
 translation.css    Translate selector styling
-translation.js     Language list, online translation, English restoration and caching
+translation.js     Language list, Google translator integration, English default, caching and retry
 assets/            All 11 tool screenshots and both background images
 .nojekyll          Tells GitHub Pages to serve these static files without Jekyll
 README.md          Deployment and maintenance instructions
@@ -58,7 +58,7 @@ Search indexes the profile text automatically when the page loads. Translation a
 4. Add `"newtool"` to the `ids` array in `app.js` at the matching position. Keep the first entry `"home"`.
 5. Update the neighboring previous/next buttons so they follow that order. The last tool's final button should return to `home`.
 6. Update the cover's static tool count, its initial “Showing all ... tools” text, and the HTML meta description's tool count. Runtime navigation, search, and translation counters derive their totals automatically.
-7. If a new acronym or brand should remain untranslated, add its exact standalone text to the `brands` set in `translation.js`. Descriptive titles and surrounding prose will still translate.
+7. If a new acronym or brand should remain untranslated, add its exact standalone text to the `brands` set and, for occurrences within prose, to `protectedPattern` in `translation.js`. Escape regular-expression punctuation as needed. Descriptive titles and surrounding prose will still translate.
 8. Confirm the tool appears in the contents, search results, keyboard navigation, and translated pages.
 
 ## Replace an image
@@ -81,7 +81,7 @@ To test a GitHub Pages project subdirectory, put the project in a folder named `
 http://localhost:8000/Natural-Capital-Tool-Primer/
 ```
 
-Check all 11 contents cards, previous/next buttons, browser back/forward navigation, search and Clear search, image loading, external links, the mobile contents menu, and the Translate dropdown. Try Spanish or Chinese, move between tool pages, search translated terms, and switch back to English. Check the browser console/network panel for failed requests.
+Check all 11 contents cards, previous/next buttons, browser back/forward navigation, search and Clear search, image loading, external links, the mobile contents menu, and the Translate dropdown. Confirm the initial page is English, select Spanish or Chinese manually, move between tool pages, search, and switch back to English. Select another language and then use the browser Reload button: both the selector and page content should return to English. Test a direct link such as `#hawqs` and a phone-sized viewport as well. Check the browser console/network panel for failed requests.
 
 ## Deploy with GitHub Pages
 
@@ -98,6 +98,20 @@ No GitHub Actions workflow, Node installation, custom domain, or ChatGPT hosting
 
 ## Translation and external services
 
-The translation implementation is unchanged. `translation.js` sends English page text to Google's `translate.googleapis.com` service when a non-English language is selected. Translation requires internet access and that service's availability; it is not an offline translator. The selected language is remembered in the browser's local storage, and translated phrases are cached in memory for the current page session. Choosing English restores the original local text. If translation fails, the existing language remains and a retry message appears.
+The latest published `translation.js` and `translation.css` are included unchanged.
 
-The full English primer, scripts, styles, and images are local. No runtime file depends on the former `shiyuepiaoxue.chatgpt.site` host. Intentional external links to tool providers, documents, and attribution sources remain external. The original hosting `.openai` metadata and Git history are omitted because GitHub Pages does not need them. The existing hosted website was not changed by this export.
+- **English on every normal opening or browser reload.** The HTML declares `lang="en"`. Previously selected languages are not restored, and browser language is not detected. Google's translator is loaded only after a manual non-English selection and initializes with `pageLanguage: 'en'` and `autoDisplay: false`.
+- **Manual language selection remains available.** The existing 249 language choices are retained. Switching languages starts from original English text, preserving the current tool and search. The implementation uses a short-lived, single-use session-storage handoff for its own refresh after an explicit selection or uncached tool navigation; an ordinary later browser reload returns to English.
+- **Persistent phrase caching.** Translations are stored by source phrase and language in browser local storage under `primer-translations-v14:`. The code accepts caches saved within 30 days, filters out phrases no longer in the source, and reuses cached text when possible. Caching does not change the English default. Browser storage is specific to the site's origin: caches on the ChatGPT-hosted site do not transfer to GitHub Pages.
+- **Loading and retry.** The existing loading message and busy state remain. Service initialization and translation waits are bounded; failures leave readable English where needed and offer **Try again**. There is no endless automatic retry loop.
+- **Protected terms.** Tool brands, acronyms, technical identifiers, URLs, and recognized citation patterns are protected from translation. Link destinations and image files are never translated.
+- **Online dependency.** Manual translation uses Google's Website Translator (`https://translate.google.com/translate_a/element.js` and the resources it loads), the same primary translation service used by Data Primer Explorer. This replaces the older bulk `translate.googleapis.com/translate_a/single` implementation. Translation needs internet access and Google service availability; the English site needs no translation service. No API key or backend is included or required by this published implementation.
+
+To invalidate previously cached translations after changing translation rules, change the `CACHE` prefix in `translation.js` to a new version. Editing source phrases already causes new phrases to be translated rather than reusing a different source phrase's cached result. Keep the English startup behavior and one-use handoff logic intact.
+
+The full English primer, scripts, styles, and images are local. No core content or visual asset depends on the `shiyuepiaoxue.chatgpt.site` host. Intentional external links to tool providers, documents, and attribution sources remain external. The original hosting `.openai` metadata and Git history are omitted because GitHub Pages does not need them. The existing hosted website was not changed by this export.
+
+
+## Export verification
+
+The export was compared against all current published source files and screenshots. `index.html`, `app.js`, `translation.js`, `translation.css`, and all 11 tool screenshots match the source. The only runtime export adjustment is replacing the two external background-image URLs in `styles.css` with local, byte-preserved image copies. The project contains no hosting credentials, `.openai` configuration, Git history, or build dependencies. The ZIP stores `index.html` at its top level.
